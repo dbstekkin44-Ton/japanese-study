@@ -2,9 +2,919 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Trang đầu tiên</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Trang web của TON</title>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      color: #111;
+      background: #fff;
+    }
+
+    button,
+    input {
+      font: inherit;
+    }
+
+    .home-page {
+      min-height: 100vh;
+      border: 3px solid #7048ff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding-top: 48px;
+    }
+
+    h1 {
+      margin: 0 16px 48px;
+      font-size: 20px;
+      line-height: 1.4;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .flashcard-button {
+      min-width: 148px;
+      height: 34px;
+      border: 2px solid #666;
+      background: #fff;
+      color: #111;
+      font-size: 18px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .flashcard-page {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 46px 15px 24px;
+      background: #fff;
+    }
+
+    .flashcard-frame {
+      width: min(430px, calc(100vw - 30px));
+      min-height: 520px;
+      border: 3px solid #111;
+      padding: 4px;
+      background: #fff;
+    }
+
+    .flashcard-toolbar {
+      display: grid;
+      grid-template-columns: 36px 1fr 36px;
+      align-items: center;
+      height: 40px;
+    }
+
+    .screen-title {
+      grid-column: 2;
+      text-align: center;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .icon-button {
+      width: 36px;
+      height: 36px;
+      border: 0;
+      background: transparent;
+      position: relative;
+      cursor: pointer;
+      padding: 0;
+    }
+
+    .back-icon::before,
+    .back-icon::after {
+      content: "";
+      position: absolute;
+      left: 8px;
+      width: 26px;
+      height: 6px;
+      background: #111;
+      border-radius: 4px;
+      transform-origin: left center;
+    }
+
+    .back-icon::before {
+      top: 17px;
+      transform: rotate(-45deg);
+    }
+
+    .back-icon::after {
+      top: 17px;
+      transform: rotate(45deg);
+    }
+
+    .settings-icon {
+      grid-column: 3;
+      font-size: 34px;
+      line-height: 1;
+      font-weight: 700;
+    }
+
+    .deck-toolbar {
+      display: grid;
+      grid-template-columns: 44px 1fr 70px 44px;
+      gap: 8px;
+      align-items: center;
+      height: 48px;
+    }
+
+    .deck-toolbar .screen-title {
+      grid-column: 2;
+    }
+
+    .deck-toolbar .settings-icon {
+      grid-column: 4;
+    }
+
+    .deck-list,
+    .settings-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .deck-row,
+    .add-card-button,
+    .settings-action {
+      width: 100%;
+      height: 42px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+    }
+
+    .deck-row {
+      display: grid;
+      grid-template-columns: 42px 1fr 42px;
+      align-items: center;
+      font-size: 18px;
+    }
+
+    .deck-open {
+      grid-column: 1 / 3;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #111;
+      cursor: pointer;
+      padding-left: 42px;
+      text-align: center;
+    }
+
+    .deck-menu {
+      grid-column: 3;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #111;
+      font-size: 24px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 0 8px;
+    }
+
+    .add-card-button {
+      font-size: 42px;
+      line-height: 24px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding-bottom: 7px;
+    }
+
+    .name-form {
+      display: grid;
+      grid-template-columns: 70px 1fr 50px;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .name-input,
+    .name-action {
+      height: 34px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 13px;
+    }
+
+    .name-input {
+      min-width: 0;
+      padding: 0 6px;
+      text-align: center;
+    }
+
+    .name-action {
+      padding: 0;
+      cursor: pointer;
+      font-weight: 700;
+    }
+
+    .settings-list {
+      margin-top: 8px;
+    }
+
+    .settings-action {
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    .word-form {
+      display: grid;
+      grid-template-columns: 62px 1fr;
+      column-gap: 8px;
+      row-gap: 16px;
+      align-items: center;
+      margin: 8px 10px 0;
+    }
+
+    .word-label {
+      font-size: 14px;
+      white-space: nowrap;
+    }
+
+    .word-input {
+      width: 100%;
+      height: 30px;
+      border: 3px solid #111;
+      padding: 0 6px;
+      background: #fff;
+      color: #111;
+      font-size: 14px;
+    }
+
+    .word-submit {
+      grid-column: 1 / -1;
+      justify-self: center;
+      width: 50px;
+      height: 31px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 14px;
+      cursor: pointer;
+    }
+
+    .deck-word-list {
+      display: grid;
+      gap: 18px;
+      margin: 18px 18px 0;
+    }
+
+    .deck-word-item {
+      display: grid;
+      grid-template-columns: 34px 1fr;
+      gap: 14px;
+      align-items: center;
+    }
+
+    .word-number {
+      text-align: center;
+      font-size: 18px;
+    }
+
+    .kanji-box {
+      min-height: 42px;
+      border: 3px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      background: #fff;
+      color: #111;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .study-start {
+      grid-column: 3;
+      width: 70px;
+      height: 42px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .study-card {
+      min-height: 295px;
+      border: 3px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 18px 10px 18px;
+      background: #fff;
+      color: #111;
+      text-align: center;
+      padding: 12px;
+    }
+
+    .study-card-content {
+      display: grid;
+      gap: 10px;
+      font-size: 42px;
+      line-height: 1.25;
+    }
+
+    .study-card-content.multi {
+      font-size: 24px;
+    }
+
+    .study-actions {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 5px;
+      margin: 0 10px 24px;
+    }
+
+    .study-action {
+      height: 42px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .study-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 58px;
+      margin: 0 28px;
+    }
+
+    .study-nav-button {
+      height: 42px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 46px;
+      line-height: 32px;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 0 8px;
+    }
+
+    .study-options {
+      display: grid;
+      gap: 10px;
+      margin: 0 22px 0 58px;
+    }
+
+    .option-section-title {
+      width: 96px;
+      height: 34px;
+      border: 3px solid #111;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto;
+      font-size: 14px;
+    }
+
+    .option-row {
+      display: grid;
+      grid-template-columns: 1fr 34px;
+      gap: 14px;
+      align-items: center;
+      font-size: 13px;
+    }
+
+    .option-row input {
+      width: 28px;
+      height: 28px;
+      accent-color: #fff;
+      cursor: pointer;
+    }
+
+    .study-options-ok {
+      width: 58px;
+      height: 42px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      justify-self: end;
+      margin-top: -4px;
+      margin-right: -18px;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none;
+    }
+  </style>
 </head>
 <body>
-  <h1>Tôi đang học tiếng nhật 👋</h1>
+  <main class="home-page" id="homePage">
+    <h1>Chào mừng đến với trang web của TON</h1>
+    <button class="flashcard-button" id="openFlashcard" type="button">Flashcard</button>
+  </main>
+
+  <main class="flashcard-page hidden" id="flashcardPage">
+    <section class="flashcard-frame" aria-label="Danh sách flashcard">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backHome" type="button" aria-label="Quay lại"></button>
+        <button class="icon-button settings-icon" type="button" aria-label="Cài đặt">&#9881;</button>
+      </div>
+
+      <div class="deck-list" id="deckList">
+        <form class="name-form hidden" id="nameForm">
+          <button class="name-action" id="cancelName" type="button">Cancel</button>
+          <input class="name-input" id="deckName" type="text" aria-label="Tên flashcard" autocomplete="off">
+          <button class="name-action" type="submit">OK</button>
+        </form>
+        <button class="add-card-button" id="addCard" type="button" aria-label="Thêm flashcard">+</button>
+      </div>
+    </section>
+  </main>
+
+  <main class="flashcard-page hidden" id="deckPage">
+    <section class="flashcard-frame" aria-label="Chi tiết flashcard">
+      <div class="deck-toolbar">
+        <button class="icon-button back-icon" id="backDeckList" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title" id="deckTitle"></div>
+        <button class="study-start" id="startStudy" type="button">HỌC</button>
+        <button class="icon-button settings-icon" id="openDeckSettings" type="button" aria-label="Cài đặt">&#9881;</button>
+      </div>
+
+      <div class="deck-word-list" id="deckWordList"></div>
+    </section>
+  </main>
+
+  <main class="flashcard-page hidden" id="studyPage">
+    <section class="flashcard-frame" aria-label="Học flashcard">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backStudyDeck" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title" id="studyTitle"></div>
+        <button class="icon-button settings-icon" id="openStudyOptions" type="button" aria-label="Cài đặt">&#9881;</button>
+      </div>
+
+      <div class="study-card" id="studyCard"></div>
+
+      <div class="study-actions">
+        <button class="study-action" type="button">Nhớ</button>
+        <button class="study-action" type="button">chưa</button>
+        <button class="study-action" id="flipStudyCard" type="button">Lật</button>
+        <button class="study-action" id="restartStudyCard" type="button" aria-label="Làm lại">&#8635;</button>
+      </div>
+
+      <div class="study-nav">
+        <button class="study-nav-button" id="previousStudyCard" type="button" aria-label="Từ trước">‹</button>
+        <button class="study-nav-button" id="nextStudyCard" type="button" aria-label="Từ tiếp theo">›</button>
+      </div>
+    </section>
+  </main>
+
+  <main class="flashcard-page hidden" id="studyOptionsPage">
+    <section class="flashcard-frame" aria-label="Tùy chọn học">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backStudyOptions" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title" id="studyOptionsTitle"></div>
+      </div>
+
+      <form class="study-options" id="studyOptionsForm">
+        <div class="option-section-title">mặt trước</div>
+        <label class="option-row">漢字 <input type="checkbox" name="front" value="kanji" checked></label>
+        <label class="option-row">Higarana <input type="checkbox" name="front" value="higarana"></label>
+        <label class="option-row">Hán Việt <input type="checkbox" name="front" value="hanViet"></label>
+        <label class="option-row">Nghĩa <input type="checkbox" name="front" value="meaning"></label>
+        <label class="option-row">Ví dụ <input type="checkbox" name="front" value="example"></label>
+        <label class="option-row">Nghĩa <input type="checkbox" name="front" value="exampleMeaning"></label>
+
+        <div class="option-section-title">mặt sau</div>
+        <label class="option-row">漢字 <input type="checkbox" name="back" value="kanji"></label>
+        <label class="option-row">Higarana <input type="checkbox" name="back" value="higarana" checked></label>
+        <label class="option-row">Hán Việt <input type="checkbox" name="back" value="hanViet" checked></label>
+        <label class="option-row">Nghĩa <input type="checkbox" name="back" value="meaning" checked></label>
+        <label class="option-row">Ví dụ <input type="checkbox" name="back" value="example"></label>
+        <label class="option-row">Nghĩa <input type="checkbox" name="back" value="exampleMeaning"></label>
+
+        <button class="study-options-ok" type="submit">OK</button>
+      </form>
+    </section>
+  </main>
+
+  <main class="flashcard-page hidden" id="settingsPage">
+    <section class="flashcard-frame" aria-label="Cài đặt">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backDeckDetail" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title">Cài đặt</div>
+      </div>
+
+      <div class="settings-list">
+        <button class="settings-action" id="openExcelUpload" type="button">Thêm bằng excel</button>
+        <button class="settings-action" id="openAddWord" type="button">Thêm 1 từ</button>
+        <input class="hidden" id="excelUpload" type="file" accept=".xlsx,.xls,.csv">
+      </div>
+    </section>
+  </main>
+
+  <main class="flashcard-page hidden" id="addWordPage">
+    <section class="flashcard-frame" aria-label="Thêm 1 từ">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backSettings" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title">Thêm 1 từ</div>
+      </div>
+
+      <form class="word-form" id="wordForm">
+        <label class="word-label" for="kanji">漢字</label>
+        <input class="word-input" id="kanji" type="text" autocomplete="off">
+
+        <label class="word-label" for="higarana">Higarana</label>
+        <input class="word-input" id="higarana" type="text" autocomplete="off">
+
+        <label class="word-label" for="hanViet">Hán Việt</label>
+        <input class="word-input" id="hanViet" type="text" autocomplete="off">
+
+        <label class="word-label" for="meaning">Nghĩa</label>
+        <input class="word-input" id="meaning" type="text" autocomplete="off">
+
+        <label class="word-label" for="example">Ví dụ</label>
+        <input class="word-input" id="example" type="text" autocomplete="off">
+
+        <label class="word-label" for="exampleMeaning">Nghĩa</label>
+        <input class="word-input" id="exampleMeaning" type="text" autocomplete="off">
+
+        <button class="word-submit" type="submit">OK</button>
+      </form>
+    </section>
+  </main>
+
+  <script>
+    const homePage = document.getElementById("homePage");
+    const flashcardPage = document.getElementById("flashcardPage");
+    const deckPage = document.getElementById("deckPage");
+    const studyPage = document.getElementById("studyPage");
+    const studyOptionsPage = document.getElementById("studyOptionsPage");
+    const settingsPage = document.getElementById("settingsPage");
+    const addWordPage = document.getElementById("addWordPage");
+    const openFlashcard = document.getElementById("openFlashcard");
+    const backHome = document.getElementById("backHome");
+    const backDeckList = document.getElementById("backDeckList");
+    const backStudyDeck = document.getElementById("backStudyDeck");
+    const backStudyOptions = document.getElementById("backStudyOptions");
+    const backDeckDetail = document.getElementById("backDeckDetail");
+    const backSettings = document.getElementById("backSettings");
+    const openDeckSettings = document.getElementById("openDeckSettings");
+    const openStudyOptions = document.getElementById("openStudyOptions");
+    const openExcelUpload = document.getElementById("openExcelUpload");
+    const excelUpload = document.getElementById("excelUpload");
+    const openAddWord = document.getElementById("openAddWord");
+    const wordForm = document.getElementById("wordForm");
+    const studyOptionsForm = document.getElementById("studyOptionsForm");
+    const deckList = document.getElementById("deckList");
+    const addCard = document.getElementById("addCard");
+    const startStudy = document.getElementById("startStudy");
+    const studyTitle = document.getElementById("studyTitle");
+    const studyOptionsTitle = document.getElementById("studyOptionsTitle");
+    const studyCard = document.getElementById("studyCard");
+    const flipStudyCard = document.getElementById("flipStudyCard");
+    const restartStudyCard = document.getElementById("restartStudyCard");
+    const previousStudyCard = document.getElementById("previousStudyCard");
+    const nextStudyCard = document.getElementById("nextStudyCard");
+    const nameForm = document.getElementById("nameForm");
+    const deckName = document.getElementById("deckName");
+    const cancelName = document.getElementById("cancelName");
+    const deckTitle = document.getElementById("deckTitle");
+    const deckWordList = document.getElementById("deckWordList");
+    const wordsByDeck = {};
+    const displaySettings = {
+      front: ["kanji"],
+      back: ["higarana", "hanViet", "meaning"]
+    };
+    let currentDeckName = "";
+    let currentStudyIndex = 0;
+    let isStudyCardBack = false;
+
+    function showScreen(screen) {
+      homePage.classList.add("hidden");
+      flashcardPage.classList.add("hidden");
+      deckPage.classList.add("hidden");
+      studyPage.classList.add("hidden");
+      studyOptionsPage.classList.add("hidden");
+      settingsPage.classList.add("hidden");
+      addWordPage.classList.add("hidden");
+      screen.classList.remove("hidden");
+    }
+
+    function getCurrentWords() {
+      return wordsByDeck[currentDeckName] || [];
+    }
+
+    function renderDeckWords() {
+      deckWordList.innerHTML = "";
+
+      getCurrentWords().forEach((word, index) => {
+        const wordItem = document.createElement("div");
+        wordItem.className = "deck-word-item";
+
+        const wordNumber = document.createElement("div");
+        wordNumber.className = "word-number";
+        wordNumber.textContent = index + 1;
+
+        const kanjiBox = document.createElement("div");
+        kanjiBox.className = "kanji-box";
+        kanjiBox.textContent = word.kanji || "漢字";
+
+        wordItem.append(wordNumber, kanjiBox);
+        deckWordList.append(wordItem);
+      });
+    }
+
+    function renderStudyCard() {
+      const word = getCurrentWords()[currentStudyIndex];
+      studyCard.innerHTML = "";
+
+      if (!word) {
+        return;
+      }
+
+      const side = isStudyCardBack ? "back" : "front";
+      const selectedFields = displaySettings[side];
+      const values = selectedFields
+        .map((field) => word[field])
+        .filter((value) => value && value.trim());
+
+      const content = document.createElement("div");
+      content.className = `study-card-content${values.length > 1 ? " multi" : ""}`;
+
+      (values.length ? values : [""]).forEach((value) => {
+        const line = document.createElement("div");
+        line.textContent = value;
+        content.append(line);
+      });
+
+      studyCard.append(content);
+    }
+
+    function openStudyScreen() {
+      studyTitle.textContent = `HỌC: ${currentDeckName}`;
+      currentStudyIndex = 0;
+      isStudyCardBack = false;
+      renderStudyCard();
+      showScreen(studyPage);
+    }
+
+    function addWordsToCurrentDeck(words) {
+      if (!currentDeckName || words.length === 0) {
+        return;
+      }
+
+      if (!wordsByDeck[currentDeckName]) {
+        wordsByDeck[currentDeckName] = [];
+      }
+
+      wordsByDeck[currentDeckName].push(...words);
+      renderDeckWords();
+      showScreen(deckPage);
+    }
+
+    function readExcelRows(workbook) {
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const rows = XLSX.utils.sheet_to_json(sheet, {
+        header: 1,
+        defval: ""
+      });
+
+      return rows.slice(1).map((row) => ({
+        kanji: String(row[1] || "").trim(),
+        hanViet: String(row[2] || "").trim(),
+        higarana: String(row[3] || "").trim(),
+        meaning: String(row[4] || "").trim(),
+        example: String(row[5] || "").trim(),
+        exampleMeaning: String(row[6] || "").trim()
+      })).filter((word) => (
+        word.kanji ||
+        word.hanViet ||
+        word.higarana ||
+        word.meaning ||
+        word.example ||
+        word.exampleMeaning
+      ));
+    }
+
+    function syncStudyOptionInputs() {
+      studyOptionsTitle.textContent = `HỌC: ${currentDeckName}`;
+
+      studyOptionsForm.querySelectorAll("input[type='checkbox']").forEach((checkbox) => {
+        checkbox.checked = displaySettings[checkbox.name].includes(checkbox.value);
+      });
+    }
+
+    openFlashcard.addEventListener("click", () => {
+      showScreen(flashcardPage);
+    });
+
+    backHome.addEventListener("click", () => {
+      showScreen(homePage);
+    });
+
+    backDeckList.addEventListener("click", () => {
+      showScreen(flashcardPage);
+    });
+
+    backDeckDetail.addEventListener("click", () => {
+      showScreen(deckPage);
+    });
+
+    backStudyDeck.addEventListener("click", () => {
+      showScreen(deckPage);
+    });
+
+    backStudyOptions.addEventListener("click", () => {
+      showScreen(studyPage);
+    });
+
+    backSettings.addEventListener("click", () => {
+      showScreen(settingsPage);
+    });
+
+    openDeckSettings.addEventListener("click", () => {
+      showScreen(settingsPage);
+    });
+
+    openStudyOptions.addEventListener("click", () => {
+      syncStudyOptionInputs();
+      showScreen(studyOptionsPage);
+    });
+
+    openExcelUpload.addEventListener("click", () => {
+      excelUpload.click();
+    });
+
+    excelUpload.addEventListener("change", async () => {
+      const file = excelUpload.files[0];
+      if (!file) {
+        return;
+      }
+
+      if (typeof XLSX === "undefined") {
+        alert("Không tải được thư viện đọc Excel. Hãy kiểm tra kết nối mạng rồi thử lại.");
+        excelUpload.value = "";
+        return;
+      }
+
+      try {
+        const data = await file.arrayBuffer();
+        const workbook = XLSX.read(data, { type: "array" });
+        const words = readExcelRows(workbook);
+        addWordsToCurrentDeck(words);
+      } catch (error) {
+        alert("Không đọc được file Excel. Vui lòng kiểm tra lại định dạng file.");
+      } finally {
+        excelUpload.value = "";
+      }
+    });
+
+    openAddWord.addEventListener("click", () => {
+      showScreen(addWordPage);
+    });
+
+    startStudy.addEventListener("click", () => {
+      openStudyScreen();
+    });
+
+    flipStudyCard.addEventListener("click", () => {
+      isStudyCardBack = !isStudyCardBack;
+      renderStudyCard();
+    });
+
+    restartStudyCard.addEventListener("click", () => {
+      isStudyCardBack = false;
+      renderStudyCard();
+    });
+
+    previousStudyCard.addEventListener("click", () => {
+      const words = getCurrentWords();
+      if (words.length === 0) {
+        return;
+      }
+
+      currentStudyIndex = (currentStudyIndex - 1 + words.length) % words.length;
+      isStudyCardBack = false;
+      renderStudyCard();
+    });
+
+    nextStudyCard.addEventListener("click", () => {
+      const words = getCurrentWords();
+      if (words.length === 0) {
+        return;
+      }
+
+      currentStudyIndex = (currentStudyIndex + 1) % words.length;
+      isStudyCardBack = false;
+      renderStudyCard();
+    });
+
+    addCard.addEventListener("click", () => {
+      addCard.classList.add("hidden");
+      nameForm.classList.remove("hidden");
+      deckName.value = "";
+      deckName.focus();
+    });
+
+    cancelName.addEventListener("click", () => {
+      nameForm.classList.add("hidden");
+      addCard.classList.remove("hidden");
+    });
+
+    nameForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const name = deckName.value.trim();
+      if (!name) {
+        deckName.focus();
+        return;
+      }
+
+      const deckRow = document.createElement("div");
+      deckRow.className = "deck-row";
+
+      const deckOpen = document.createElement("button");
+      deckOpen.className = "deck-open";
+      deckOpen.type = "button";
+      deckOpen.textContent = name;
+      deckOpen.addEventListener("click", () => {
+        currentDeckName = name;
+        deckTitle.textContent = name;
+        renderDeckWords();
+        showScreen(deckPage);
+      });
+
+      const deckMenu = document.createElement("button");
+      deckMenu.className = "deck-menu";
+      deckMenu.type = "button";
+      deckMenu.textContent = "...";
+      deckMenu.setAttribute("aria-label", `Xóa ${name}`);
+      deckMenu.addEventListener("click", () => {
+        const shouldDelete = confirm(`Xóa "${name}"?`);
+        if (shouldDelete) {
+          deckRow.remove();
+          delete wordsByDeck[name];
+        }
+      });
+
+      deckRow.append(deckOpen, deckMenu);
+      deckList.insertBefore(deckRow, nameForm);
+      nameForm.classList.add("hidden");
+      addCard.classList.remove("hidden");
+    });
+
+    wordForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const word = {
+        kanji: document.getElementById("kanji").value.trim(),
+        higarana: document.getElementById("higarana").value.trim(),
+        hanViet: document.getElementById("hanViet").value.trim(),
+        meaning: document.getElementById("meaning").value.trim(),
+        example: document.getElementById("example").value.trim(),
+        exampleMeaning: document.getElementById("exampleMeaning").value.trim()
+      };
+
+      if (!currentDeckName) {
+        return;
+      }
+
+      if (!wordsByDeck[currentDeckName]) {
+        wordsByDeck[currentDeckName] = [];
+      }
+
+      wordsByDeck[currentDeckName].push(word);
+      wordForm.reset();
+      renderDeckWords();
+      showScreen(deckPage);
+    });
+
+    studyOptionsForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const front = Array.from(studyOptionsForm.querySelectorAll("input[name='front']:checked"))
+        .map((input) => input.value);
+      const back = Array.from(studyOptionsForm.querySelectorAll("input[name='back']:checked"))
+        .map((input) => input.value);
+
+      displaySettings.front = front.length ? front : ["kanji"];
+      displaySettings.back = back.length ? back : ["meaning"];
+      renderStudyCard();
+      showScreen(studyPage);
+    });
+  </script>
 </body>
 </html>
