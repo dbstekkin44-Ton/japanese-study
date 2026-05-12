@@ -10,11 +10,21 @@
       box-sizing: border-box;
     }
 
+    :root {
+      --app-bg: #ffffff;
+      --app-text: #111111;
+      --study-frame-width: 430px;
+      --study-frame-min-height: 520px;
+      --study-card-min-height: 295px;
+      --study-card-font-size: 42px;
+      --study-card-multi-font-size: 24px;
+    }
+
     body {
       margin: 0;
       font-family: Arial, Helvetica, sans-serif;
-      color: #111;
-      background: #fff;
+      color: var(--app-text);
+      background: var(--app-bg);
     }
 
     button,
@@ -57,7 +67,7 @@
       justify-content: center;
       align-items: center;
       padding: 24px 15px;
-      background: #fff;
+      background: var(--app-bg);
     }
 
     .home-nav-button {
@@ -72,8 +82,8 @@
     }
 
     .flashcard-frame {
-      width: min(430px, calc(100vw - 30px));
-      min-height: 520px;
+      width: min(var(--study-frame-width), calc(100vw - 30px));
+      min-height: var(--study-frame-min-height);
       border: 3px solid #111;
       padding: 4px;
       background: #fff;
@@ -366,7 +376,7 @@
     }
 
     .study-card {
-      min-height: 295px;
+      min-height: var(--study-card-min-height);
       border: 3px solid #111;
       display: flex;
       align-items: center;
@@ -414,12 +424,12 @@
     .study-card-content {
       display: grid;
       gap: 10px;
-      font-size: 42px;
+      font-size: var(--study-card-font-size);
       line-height: 1.25;
     }
 
     .study-card-content.multi {
-      font-size: 24px;
+      font-size: var(--study-card-multi-font-size);
     }
 
     .study-actions {
@@ -562,12 +572,105 @@
       cursor: pointer;
     }
 
+    .global-settings-button {
+      position: fixed;
+      top: 10px;
+      right: 10px;
+      z-index: 20;
+      width: 38px;
+      height: 38px;
+      border: 3px solid #111;
+      border-radius: 50%;
+      background: #fff;
+      color: #111;
+      font-size: 22px;
+      line-height: 1;
+      cursor: pointer;
+    }
+
+    .global-settings-panel {
+      position: fixed;
+      top: 56px;
+      right: 10px;
+      z-index: 19;
+      width: min(280px, calc(100vw - 20px));
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      padding: 10px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .global-settings-title {
+      margin: 0;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    .global-settings-row {
+      display: grid;
+      gap: 7px;
+      font-size: 14px;
+    }
+
+    .global-settings-range {
+      width: 100%;
+      accent-color: #111;
+    }
+
+    .theme-buttons {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 6px;
+    }
+
+    .theme-button {
+      height: 34px;
+      border: 2px solid #111;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+    }
+
+    .theme-button.active {
+      background: #111;
+      color: #fff;
+    }
+
+    .custom-bg-input {
+      width: 100%;
+      height: 34px;
+      border: 2px solid #111;
+      padding: 0;
+      background: #fff;
+      cursor: pointer;
+    }
+
     .hidden {
       display: none;
     }
   </style>
 </head>
 <body>
+  <button class="global-settings-button" id="openGlobalSettings" type="button" aria-label="Cài đặt giao diện">&#9881;</button>
+  <section class="global-settings-panel hidden" id="globalSettingsPanel" aria-label="Cài đặt giao diện">
+    <h2 class="global-settings-title">Cài đặt</h2>
+    <label class="global-settings-row" for="studyScale">
+      Vùng học <span id="studyScaleValue">100%</span>
+      <input class="global-settings-range" id="studyScale" type="range" min="80" max="140" step="5" value="100">
+    </label>
+    <div class="global-settings-row">
+      Màu nền
+      <div class="theme-buttons">
+        <button class="theme-button" type="button" data-theme="light">Trắng</button>
+        <button class="theme-button" type="button" data-theme="dark">Tối</button>
+        <button class="theme-button" type="button" data-theme="custom">Tùy</button>
+      </div>
+      <input class="custom-bg-input" id="customBackgroundColor" type="color" value="#ffffff" aria-label="Chọn màu nền">
+    </div>
+  </section>
+
   <main class="home-page" id="homePage">
     <h1>Chào mừng đến với trang web của TON</h1>
     <button class="flashcard-button" id="openFlashcard" type="button">Flashcard</button>
@@ -780,6 +883,12 @@
     const cancelName = document.getElementById("cancelName");
     const deckTitle = document.getElementById("deckTitle");
     const deckWordList = document.getElementById("deckWordList");
+    const openGlobalSettings = document.getElementById("openGlobalSettings");
+    const globalSettingsPanel = document.getElementById("globalSettingsPanel");
+    const studyScale = document.getElementById("studyScale");
+    const studyScaleValue = document.getElementById("studyScaleValue");
+    const customBackgroundColor = document.getElementById("customBackgroundColor");
+    const themeButtons = document.querySelectorAll(".theme-button");
     const storageKey = "tonFlashcardAppState";
     const deckNames = [];
     const groupNames = [];
@@ -800,6 +909,11 @@
         front: {},
         back: {}
       }
+    };
+    const appUiSettings = {
+      studyScale: 100,
+      backgroundMode: "light",
+      customBackgroundColor: "#ffffff"
     };
     let currentDeckName = "";
     let currentStudyIndex = 0;
@@ -831,6 +945,49 @@
 
     function getCurrentWords() {
       return wordsByDeck[currentDeckName] || [];
+    }
+
+    function getBackgroundColor() {
+      if (appUiSettings.backgroundMode === "dark") {
+        return "#111111";
+      }
+
+      if (appUiSettings.backgroundMode === "custom") {
+        return appUiSettings.customBackgroundColor;
+      }
+
+      return "#ffffff";
+    }
+
+    function getReadablePageTextColor(backgroundColor) {
+      const match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(backgroundColor);
+      if (!match) {
+        return "#111111";
+      }
+
+      const [red, green, blue] = match.slice(1).map((colorPart) => parseInt(colorPart, 16));
+      const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
+      return brightness < 130 ? "#ffffff" : "#111111";
+    }
+
+    function applyUiSettings() {
+      const scale = Math.min(Math.max(Number(appUiSettings.studyScale) || 100, 80), 140);
+      const backgroundColor = getBackgroundColor();
+      appUiSettings.studyScale = scale;
+      document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--app-bg", backgroundColor);
+      document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
+      studyScale.value = scale;
+      studyScaleValue.textContent = `${scale}%`;
+      customBackgroundColor.value = appUiSettings.customBackgroundColor;
+
+      themeButtons.forEach((themeButton) => {
+        themeButton.classList.toggle("active", themeButton.dataset.theme === appUiSettings.backgroundMode);
+      });
     }
 
     function ensureMemoryGroups() {
@@ -951,7 +1108,8 @@
         groupNames,
         wordsByDeck,
         wordsByGroup,
-        displaySettings
+        displaySettings,
+        appUiSettings
       };
 
       localStorage.setItem(storageKey, JSON.stringify(appState));
@@ -1113,6 +1271,7 @@
     function loadAppState() {
       const savedState = localStorage.getItem(storageKey);
       if (!savedState) {
+        applyUiSettings();
         migrateDefaultDeckNames();
         ensureMemoryGroups();
         renderDeckList();
@@ -1161,11 +1320,27 @@
           }
         }
 
+        if (appState.appUiSettings && typeof appState.appUiSettings === "object") {
+          if (Number.isFinite(Number(appState.appUiSettings.studyScale))) {
+            appUiSettings.studyScale = Number(appState.appUiSettings.studyScale);
+          }
+
+          if (["light", "dark", "custom"].includes(appState.appUiSettings.backgroundMode)) {
+            appUiSettings.backgroundMode = appState.appUiSettings.backgroundMode;
+          }
+
+          if (/^#[0-9a-f]{6}$/i.test(appState.appUiSettings.customBackgroundColor || "")) {
+            appUiSettings.customBackgroundColor = appState.appUiSettings.customBackgroundColor;
+          }
+        }
+
+        applyUiSettings();
         migrateDefaultDeckNames();
         ensureMemoryGroups();
         renderDeckList();
       } catch (error) {
         localStorage.removeItem(storageKey);
+        applyUiSettings();
       }
     }
 
@@ -1623,6 +1798,38 @@
         openWordActionMenu.remove();
         openWordActionMenu = null;
       }
+
+      globalSettingsPanel.classList.add("hidden");
+    });
+
+    openGlobalSettings.addEventListener("click", (event) => {
+      event.stopPropagation();
+      globalSettingsPanel.classList.toggle("hidden");
+    });
+
+    globalSettingsPanel.addEventListener("click", (event) => {
+      event.stopPropagation();
+    });
+
+    studyScale.addEventListener("input", () => {
+      appUiSettings.studyScale = Number(studyScale.value);
+      applyUiSettings();
+      saveAppState();
+    });
+
+    themeButtons.forEach((themeButton) => {
+      themeButton.addEventListener("click", () => {
+        appUiSettings.backgroundMode = themeButton.dataset.theme;
+        applyUiSettings();
+        saveAppState();
+      });
+    });
+
+    customBackgroundColor.addEventListener("input", () => {
+      appUiSettings.customBackgroundColor = customBackgroundColor.value;
+      appUiSettings.backgroundMode = "custom";
+      applyUiSettings();
+      saveAppState();
     });
 
     backHome.addEventListener("click", () => {
