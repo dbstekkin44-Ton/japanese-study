@@ -13,6 +13,7 @@
     :root {
       --app-bg: #ffffff;
       --app-text: #111111;
+      --study-accent: #ff3333;
       --study-frame-width: 430px;
       --study-frame-min-height: 520px;
       --study-card-min-height: 295px;
@@ -75,7 +76,7 @@
       height: 58px;
       border: 3px solid #111;
       background: #fff;
-      color: #ff3333;
+      color: var(--study-accent);
       font-size: 20px;
       cursor: pointer;
       margin-bottom: 28px;
@@ -84,9 +85,10 @@
     .flashcard-frame {
       width: min(var(--study-frame-width), calc(100vw - 30px));
       min-height: var(--study-frame-min-height);
-      border: 3px solid #111;
+      border: 3px solid var(--app-text);
       padding: 4px;
-      background: #fff;
+      background: var(--app-bg);
+      color: var(--app-text);
     }
 
     .flashcard-toolbar {
@@ -137,6 +139,7 @@
 
     .settings-icon {
       grid-column: 3;
+      color: var(--app-text);
       font-size: 34px;
       line-height: 1;
       font-weight: 700;
@@ -562,7 +565,7 @@
     .study-options-ok {
       width: 58px;
       height: 42px;
-      border: 3px solid #111;
+      border: 3px solid var(--app-text);
       background: #fff;
       color: #111;
       justify-self: end;
@@ -581,8 +584,8 @@
       height: 38px;
       border: 3px solid #111;
       border-radius: 50%;
-      background: #fff;
-      color: #111;
+      background: var(--app-bg);
+      color: var(--app-text);
       font-size: 22px;
       line-height: 1;
       cursor: pointer;
@@ -634,8 +637,8 @@
     }
 
     .theme-button.active {
-      background: #111;
-      color: #fff;
+      background: var(--app-text);
+      color: var(--app-bg);
     }
 
     .custom-bg-input {
@@ -959,15 +962,50 @@
       return "#ffffff";
     }
 
-    function getReadablePageTextColor(backgroundColor) {
-      const match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(backgroundColor);
+    function getHexColorParts(color) {
+      const match = /^#([0-9a-f]{2})([0-9a-f]{2})([0-9a-f]{2})$/i.exec(color);
       if (!match) {
+        return null;
+      }
+
+      return match.slice(1).map((colorPart) => parseInt(colorPart, 16));
+    }
+
+    function getColorBrightness(color) {
+      const colorParts = getHexColorParts(color);
+      if (!colorParts) {
+        return null;
+      }
+
+      const [red, green, blue] = colorParts;
+      return (red * 299 + green * 587 + blue * 114) / 1000;
+    }
+
+    function getReadablePageTextColor(backgroundColor) {
+      const brightness = getColorBrightness(backgroundColor);
+      if (brightness === null) {
         return "#111111";
       }
 
-      const [red, green, blue] = match.slice(1).map((colorPart) => parseInt(colorPart, 16));
-      const brightness = (red * 299 + green * 587 + blue * 114) / 1000;
       return brightness < 130 ? "#ffffff" : "#111111";
+    }
+
+    function getReadableTextColorForBackground(preferredColor, backgroundColor) {
+      const preferredBrightness = getColorBrightness(preferredColor);
+      const backgroundBrightness = getColorBrightness(backgroundColor);
+      if (preferredBrightness === null || backgroundBrightness === null) {
+        return getReadablePageTextColor(backgroundColor);
+      }
+
+      if (Math.abs(preferredBrightness - backgroundBrightness) < 95) {
+        return getReadablePageTextColor(backgroundColor);
+      }
+
+      return preferredColor;
+    }
+
+    function getReadableAccentColor(backgroundColor) {
+      return getReadableTextColorForBackground("#ff3333", backgroundColor);
     }
 
     function applyUiSettings() {
@@ -981,6 +1019,7 @@
       document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * scale / 100)}px`);
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
+      document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
       studyScale.value = scale;
       studyScaleValue.textContent = `${scale}%`;
       customBackgroundColor.value = appUiSettings.customBackgroundColor;
@@ -988,6 +1027,10 @@
       themeButtons.forEach((themeButton) => {
         themeButton.classList.toggle("active", themeButton.dataset.theme === appUiSettings.backgroundMode);
       });
+
+      if (activeScreen === studyPage) {
+        renderStudyCard();
+      }
     }
 
     function ensureMemoryGroups() {
@@ -1481,6 +1524,7 @@
 
       const side = isStudyCardBack ? "back" : "front";
       const selectedFields = displaySettings[side];
+      const cardBackgroundColor = getBackgroundColor();
       const values = selectedFields
         .map((field) => ({
           field,
@@ -1494,7 +1538,10 @@
       (values.length ? values : [{ field: "", value: "" }]).forEach((item) => {
         const line = document.createElement("div");
         line.textContent = item.value;
-        line.style.color = displaySettings.colors[side][item.field] || "#111111";
+        line.style.color = getReadableTextColorForBackground(
+          displaySettings.colors[side][item.field] || "#111111",
+          cardBackgroundColor
+        );
         content.append(line);
       });
 
