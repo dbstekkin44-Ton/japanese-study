@@ -1060,6 +1060,7 @@
     const rememberedGroupName = "Nh\u1edb";
     const forgottenGroupName = "Ch\u01b0a nh\u1edb";
     const defaultExcelFiles = [{"url":"Mimikara N2.xlsx","deckName":"Mimikara N2"},{"url":"Mimikara N3.xlsx","deckName":"Mimikara N3"},{"url":"N5.xlsx","deckName":"N5"}];
+    const defaultJsonFiles = [{"url":"N5.json","deckName":"N5"}];
     const defaultDeckNameAliases = {
       N2: "Mimikara N2",
       N3: "Mimikara N3",
@@ -1976,6 +1977,47 @@
       return loadedAnyDeck;
     }
 
+    async function loadDefaultJsonDecks() {
+      if (typeof fetch === "undefined") {
+        return false;
+      }
+
+      let loadedAnyDeck = false;
+
+      for (const defaultFile of defaultJsonFiles) {
+        try {
+          const response = await fetch(encodeURI(defaultFile.url), { cache: "no-store" });
+          if (!response.ok) {
+            continue;
+          }
+
+          const deckData = await response.json();
+          const words = Array.isArray(deckData.words) ? deckData.words : [];
+          if (words.length === 0) {
+            continue;
+          }
+
+          const deckNameValue = deckData.deckName || defaultFile.deckName;
+          if (!deckNames.includes(deckNameValue)) {
+            deckNames.push(deckNameValue);
+          }
+
+          wordsByDeck[deckNameValue] = words.map((word) => ({ ...word }));
+          loadedAnyDeck = true;
+        } catch (error) {
+          console.warn(`Khong tai duoc file JSON mac dinh: ${defaultFile.url}`, error);
+        }
+      }
+
+      if (loadedAnyDeck) {
+        ensureMemoryGroups();
+        saveAppState();
+        renderDeckList();
+      }
+
+      return loadedAnyDeck;
+    }
+
     function syncStudyOptionInputs() {
       studyOptionsTitle.textContent = `HỌC: ${currentDeckName}`;
 
@@ -2107,10 +2149,11 @@
 
     loadDefaultData.addEventListener("click", async () => {
       const loadedFromEmbedded = loadEmbeddedDefaultDecks();
+      const loadedFromJson = await loadDefaultJsonDecks();
       const loadedFromExcel = await loadDefaultExcelDecks();
       renderDeckList();
 
-      if (loadedFromEmbedded || loadedFromExcel) {
+      if (loadedFromEmbedded || loadedFromJson || loadedFromExcel) {
         alert("Da lay du lieu mac dinh.");
         return;
       }
