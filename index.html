@@ -661,7 +661,7 @@
     <h2 class="global-settings-title">Cài đặt</h2>
     <label class="global-settings-row" for="studyScale">
       Vùng học <span id="studyScaleValue">100%</span>
-      <input class="global-settings-range" id="studyScale" type="range" min="80" max="140" step="5" value="100">
+      <input class="global-settings-range" id="studyScale" type="range" min="80" max="250" step="5" value="100">
     </label>
     <div class="global-settings-row">
       Màu nền
@@ -1005,18 +1005,18 @@
     }
 
     function getReadableAccentColor(backgroundColor) {
-      return getReadableTextColorForBackground("#ff3333", backgroundColor);
+      return getReadablePageTextColor(backgroundColor);
     }
 
     function applyUiSettings() {
-      const scale = Math.min(Math.max(Number(appUiSettings.studyScale) || 100, 80), 140);
+      const scale = Math.min(Math.max(Number(appUiSettings.studyScale) || 100, 80), 250);
       const backgroundColor = getBackgroundColor();
       appUiSettings.studyScale = scale;
       document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * Math.min(scale, 170) / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * Math.min(scale, 170) / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * Math.min(scale, 170) / 100)}px`);
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
       document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
@@ -1538,10 +1538,7 @@
       (values.length ? values : [{ field: "", value: "" }]).forEach((item) => {
         const line = document.createElement("div");
         line.textContent = item.value;
-        line.style.color = getReadableTextColorForBackground(
-          displaySettings.colors[side][item.field] || "#111111",
-          cardBackgroundColor
-        );
+        line.style.color = getReadablePageTextColor(cardBackgroundColor);
         content.append(line);
       });
 
