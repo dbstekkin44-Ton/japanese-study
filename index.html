@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Trang web của TON</title>
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
   <style>
@@ -27,6 +27,9 @@
       font-family: Arial, Helvetica, sans-serif;
       color: var(--app-text);
       background: var(--app-bg);
+      touch-action: manipulation;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
     }
 
     button,
@@ -152,7 +155,7 @@
 
     .deck-toolbar {
       display: grid;
-      grid-template-columns: calc(44px * var(--ui-scale)) minmax(0, 1fr) calc(70px * var(--ui-scale)) calc(44px * var(--ui-scale));
+      grid-template-columns: calc(44px * var(--ui-scale)) minmax(0, 1fr) minmax(calc(86px * var(--ui-scale)), max-content) calc(44px * var(--ui-scale));
       gap: calc(8px * var(--ui-scale));
       align-items: center;
       height: calc(48px * var(--ui-scale));
@@ -374,13 +377,16 @@
 
     .study-start {
       grid-column: 3;
-      width: 70px;
-      height: 42px;
+      min-width: calc(86px * var(--ui-scale));
+      width: max-content;
+      height: calc(42px * var(--ui-scale));
       border: 3px solid #111;
       background: #fff;
       color: #111;
-      font-size: 18px;
+      font-size: calc(18px * var(--ui-scale));
       cursor: pointer;
+      padding: 0 calc(12px * var(--ui-scale));
+      white-space: nowrap;
     }
 
     .study-card {
@@ -1983,6 +1989,22 @@
       });
     }
 
+    function showSettingsForList() {
+      loadDefaultData.classList.remove("hidden");
+      openExcelUpload.classList.add("hidden");
+      openAddWord.classList.add("hidden");
+      settingsReturnScreen = flashcardPage;
+      showScreen(settingsPage);
+    }
+
+    function showSettingsForDeck() {
+      loadDefaultData.classList.add("hidden");
+      openExcelUpload.classList.remove("hidden");
+      openAddWord.classList.remove("hidden");
+      settingsReturnScreen = deckPage;
+      showScreen(settingsPage);
+    }
+
     openFlashcard.addEventListener("click", () => {
       showScreen(flashcardPage);
     });
@@ -1992,6 +2014,10 @@
         showScreen(homePage);
       });
     });
+
+    document.addEventListener("dblclick", (event) => {
+      event.preventDefault();
+    }, { passive: false });
 
     document.addEventListener("click", () => {
       if (openWordActionMenu) {
@@ -2066,13 +2092,11 @@
     });
 
     openListSettings.addEventListener("click", () => {
-      settingsReturnScreen = flashcardPage;
-      showScreen(settingsPage);
+      showSettingsForList();
     });
 
     openDeckSettings.addEventListener("click", () => {
-      settingsReturnScreen = deckPage;
-      showScreen(settingsPage);
+      showSettingsForDeck();
     });
 
     openStudyOptions.addEventListener("click", () => {
