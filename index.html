@@ -1063,8 +1063,8 @@
       document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * Math.min(scale, 170) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-font-size", "42px");
-      document.documentElement.style.setProperty("--study-card-multi-font-size", "24px");
+      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * Math.min(scale, 190) / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * Math.min(scale, 190) / 100)}px`);
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
       document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
