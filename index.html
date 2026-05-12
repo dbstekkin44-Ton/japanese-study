@@ -1388,6 +1388,31 @@
       showScreen(studyPage);
     }
 
+    function flipCurrentStudyCard() {
+      isStudyCardBack = !isStudyCardBack;
+      renderStudyCard();
+    }
+
+    function showPreviousStudyCard() {
+      if (studyOrder.length === 0) {
+        return;
+      }
+
+      currentStudyIndex = (currentStudyIndex - 1 + studyOrder.length) % studyOrder.length;
+      isStudyCardBack = false;
+      renderStudyCard();
+    }
+
+    function showNextStudyCard() {
+      if (studyOrder.length === 0) {
+        return;
+      }
+
+      currentStudyIndex = (currentStudyIndex + 1) % studyOrder.length;
+      isStudyCardBack = false;
+      renderStudyCard();
+    }
+
     function addWordsToCurrentDeck(words) {
       if (!currentDeckName || words.length === 0) {
         return;
@@ -1672,15 +1697,9 @@
       markCurrentStudyWord("forgotten");
     });
 
-    flipStudyCard.addEventListener("click", () => {
-      isStudyCardBack = !isStudyCardBack;
-      renderStudyCard();
-    });
+    flipStudyCard.addEventListener("click", flipCurrentStudyCard);
 
-    studyCard.addEventListener("click", () => {
-      isStudyCardBack = !isStudyCardBack;
-      renderStudyCard();
-    });
+    studyCard.addEventListener("click", flipCurrentStudyCard);
 
     restartStudyCard.addEventListener("click", () => {
       isRandomMode = !isRandomMode;
@@ -1695,24 +1714,41 @@
       renderStudyCard();
     });
 
-    previousStudyCard.addEventListener("click", () => {
-      if (studyOrder.length === 0) {
+    previousStudyCard.addEventListener("click", showPreviousStudyCard);
+
+    nextStudyCard.addEventListener("click", showNextStudyCard);
+
+    document.addEventListener("keydown", (event) => {
+      if (activeScreen !== studyPage || event.repeat) {
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex - 1 + studyOrder.length) % studyOrder.length;
-      isStudyCardBack = false;
-      renderStudyCard();
-    });
+      const targetTagName = event.target.tagName;
+      const isTypingTarget = (
+        event.target.isContentEditable ||
+        targetTagName === "INPUT" ||
+        targetTagName === "TEXTAREA" ||
+        targetTagName === "SELECT"
+      );
 
-    nextStudyCard.addEventListener("click", () => {
-      if (studyOrder.length === 0) {
+      if (isTypingTarget) {
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex + 1) % studyOrder.length;
-      isStudyCardBack = false;
-      renderStudyCard();
+      if (event.key === "ArrowLeft") {
+        event.preventDefault();
+        showPreviousStudyCard();
+      }
+
+      if (event.key === "ArrowRight") {
+        event.preventDefault();
+        showNextStudyCard();
+      }
+
+      if (event.key === " " || event.key === "Spacebar") {
+        event.preventDefault();
+        flipCurrentStudyCard();
+      }
     });
 
     openAddToGroup.addEventListener("click", () => {
