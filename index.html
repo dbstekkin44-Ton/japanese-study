@@ -650,6 +650,54 @@
       cursor: pointer;
     }
 
+    .flashcard-frame,
+    .flashcard-frame button,
+    .flashcard-frame input,
+    .study-card,
+    .word-action-menu {
+      background-color: var(--app-bg);
+      color: var(--app-text);
+    }
+
+    .flashcard-frame,
+    .flashcard-frame button,
+    .flashcard-frame input,
+    .study-card,
+    .kanji-box,
+    .word-action-menu,
+    .word-action-button,
+    .option-section-title {
+      border-color: var(--app-text);
+    }
+
+    .back-icon::before,
+    .back-icon::after,
+    .memory-dot {
+      background-color: var(--app-text);
+    }
+
+    .memory-dot {
+      border-color: var(--app-text);
+    }
+
+    .study-card-number,
+    .deck-open,
+    .deck-menu,
+    .word-menu,
+    .settings-icon {
+      color: var(--app-text);
+    }
+
+    .study-action.remembered-active {
+      background-color: #7bd88f;
+      color: #111;
+    }
+
+    .study-action.forgotten-active {
+      background-color: #ff8a8a;
+      color: #111;
+    }
+
     .hidden {
       display: none;
     }
@@ -1015,8 +1063,8 @@
       document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * Math.min(scale, 170) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * Math.min(scale, 170) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * Math.min(scale, 170) / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-font-size", "42px");
+      document.documentElement.style.setProperty("--study-card-multi-font-size", "24px");
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
       document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
