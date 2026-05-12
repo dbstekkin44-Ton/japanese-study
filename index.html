@@ -19,6 +19,7 @@
       --study-card-min-height: 295px;
       --study-card-font-size: 42px;
       --study-card-multi-font-size: 24px;
+      --ui-scale: 1;
     }
 
     body {
@@ -698,6 +699,107 @@
       color: #111;
     }
 
+    .flashcard-frame .screen-title {
+      font-size: calc(20px * var(--ui-scale));
+    }
+
+    .flashcard-frame .settings-icon {
+      font-size: calc(34px * var(--ui-scale));
+    }
+
+    .flashcard-frame .deck-row,
+    .flashcard-frame .add-card-button,
+    .flashcard-frame .settings-action {
+      min-height: calc(42px * var(--ui-scale));
+      font-size: calc(18px * var(--ui-scale));
+    }
+
+    .flashcard-frame .add-card-button {
+      font-size: calc(42px * var(--ui-scale));
+      line-height: calc(24px * var(--ui-scale));
+    }
+
+    .flashcard-frame .deck-menu,
+    .flashcard-frame .word-menu {
+      font-size: calc(24px * var(--ui-scale));
+    }
+
+    .flashcard-frame .name-input,
+    .flashcard-frame .name-action,
+    .flashcard-frame .word-label,
+    .flashcard-frame .word-input,
+    .flashcard-frame .word-submit,
+    .flashcard-frame .word-action-button,
+    .flashcard-frame .option-section-title,
+    .flashcard-frame .option-row {
+      font-size: calc(14px * var(--ui-scale));
+    }
+
+    .flashcard-frame .word-input {
+      min-height: calc(30px * var(--ui-scale));
+    }
+
+    .flashcard-frame .name-input,
+    .flashcard-frame .name-action {
+      min-height: calc(34px * var(--ui-scale));
+    }
+
+    .flashcard-frame .word-submit {
+      min-height: calc(31px * var(--ui-scale));
+    }
+
+    .flashcard-frame .deck-word-list {
+      gap: calc(18px * var(--ui-scale));
+      margin: calc(18px * var(--ui-scale)) calc(18px * var(--ui-scale)) 0;
+    }
+
+    .flashcard-frame .deck-word-item {
+      grid-template-columns: calc(34px * var(--ui-scale)) 1fr;
+      gap: calc(14px * var(--ui-scale));
+    }
+
+    .flashcard-frame .word-number,
+    .flashcard-frame .kanji-box,
+    .flashcard-frame .study-start {
+      font-size: calc(18px * var(--ui-scale));
+    }
+
+    .flashcard-frame .kanji-box {
+      min-height: calc(42px * var(--ui-scale));
+      grid-template-columns: calc(34px * var(--ui-scale)) 1fr calc(34px * var(--ui-scale));
+    }
+
+    .flashcard-frame .study-card-number {
+      font-size: calc(24px * var(--ui-scale));
+    }
+
+    .flashcard-frame .study-action,
+    .flashcard-frame .study-add-button,
+    .flashcard-frame .study-options-ok {
+      min-height: calc(42px * var(--ui-scale));
+      font-size: calc(20px * var(--ui-scale));
+    }
+
+    .flashcard-frame .study-nav-button {
+      min-height: calc(42px * var(--ui-scale));
+      font-size: calc(46px * var(--ui-scale));
+      line-height: calc(32px * var(--ui-scale));
+    }
+
+    .flashcard-frame .group-button,
+    .flashcard-frame .create-group-button,
+    .flashcard-frame .group-name-input,
+    .flashcard-frame .group-form-button {
+      min-height: calc(38px * var(--ui-scale));
+      font-size: calc(16px * var(--ui-scale));
+    }
+
+    .flashcard-frame .option-row input[type="checkbox"],
+    .flashcard-frame .option-row input[type="color"] {
+      width: calc(28px * var(--ui-scale));
+      height: calc(28px * var(--ui-scale));
+    }
+
     .hidden {
       display: none;
     }
@@ -1063,8 +1165,9 @@
       document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * Math.min(scale, 170) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * Math.min(scale, 190) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * Math.min(scale, 190) / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * scale / 100)}px`);
+      document.documentElement.style.setProperty("--ui-scale", scale / 100);
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
       document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
