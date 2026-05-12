@@ -53,10 +53,22 @@
     .flashcard-page {
       min-height: 100vh;
       display: flex;
+      flex-direction: column;
       justify-content: center;
-      align-items: flex-start;
-      padding: 46px 15px 24px;
+      align-items: center;
+      padding: 24px 15px;
       background: #fff;
+    }
+
+    .home-nav-button {
+      width: 150px;
+      height: 58px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #ff3333;
+      font-size: 20px;
+      cursor: pointer;
+      margin-bottom: 28px;
     }
 
     .flashcard-frame {
@@ -157,6 +169,7 @@
       grid-template-columns: 42px 1fr 42px;
       align-items: center;
       font-size: 18px;
+      position: relative;
     }
 
     .deck-open {
@@ -279,6 +292,7 @@
       grid-template-columns: 34px 1fr;
       gap: 14px;
       align-items: center;
+      position: relative;
     }
 
     .word-number {
@@ -289,14 +303,55 @@
     .kanji-box {
       min-height: 42px;
       border: 3px solid #111;
-      display: flex;
+      display: grid;
+      grid-template-columns: 34px 1fr 34px;
       align-items: center;
-      justify-content: center;
       padding: 0 8px;
       background: #fff;
       color: #111;
       font-size: 18px;
       font-weight: 700;
+    }
+
+    .kanji-text {
+      grid-column: 2;
+      text-align: center;
+    }
+
+    .word-menu {
+      grid-column: 3;
+      width: 100%;
+      height: 100%;
+      border: 0;
+      background: transparent;
+      color: #111;
+      font-size: 22px;
+      line-height: 1;
+      font-weight: 700;
+      cursor: pointer;
+      padding: 0 0 8px;
+    }
+
+    .word-action-menu {
+      position: absolute;
+      right: 0;
+      top: 46px;
+      z-index: 2;
+      display: grid;
+      gap: 4px;
+      width: 110px;
+      border: 3px solid #111;
+      background: #fff;
+      padding: 4px;
+    }
+
+    .word-action-button {
+      height: 30px;
+      border: 2px solid #111;
+      background: #fff;
+      color: #111;
+      cursor: pointer;
+      font-size: 14px;
     }
 
     .study-start {
@@ -321,6 +376,7 @@
       color: #111;
       text-align: center;
       padding: 12px;
+      cursor: pointer;
     }
 
     .study-card-content {
@@ -350,23 +406,69 @@
       cursor: pointer;
     }
 
+    .study-action.active {
+      background: #7bd88f;
+    }
+
     .study-nav {
       display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 58px;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 28px;
       margin: 0 28px;
     }
 
-    .study-nav-button {
+    .study-nav-button,
+    .study-add-button {
       height: 42px;
       border: 3px solid #111;
       background: #fff;
       color: #111;
+      cursor: pointer;
+    }
+
+    .study-nav-button {
       font-size: 46px;
       line-height: 32px;
       font-weight: 700;
-      cursor: pointer;
       padding: 0 0 8px;
+    }
+
+    .study-add-button {
+      font-size: 20px;
+    }
+
+    .group-list {
+      display: grid;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .group-button,
+    .create-group-button,
+    .group-name-input,
+    .group-form-button {
+      height: 38px;
+      border: 3px solid #111;
+      background: #fff;
+      color: #111;
+      font-size: 16px;
+    }
+
+    .group-button,
+    .create-group-button,
+    .group-form-button {
+      cursor: pointer;
+    }
+
+    .group-form {
+      display: grid;
+      grid-template-columns: 1fr 56px 56px;
+      gap: 5px;
+    }
+
+    .group-name-input {
+      min-width: 0;
+      padding: 0 8px;
     }
 
     .study-options {
@@ -426,6 +528,7 @@
   </main>
 
   <main class="flashcard-page hidden" id="flashcardPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Danh sách flashcard">
       <div class="flashcard-toolbar">
         <button class="icon-button back-icon" id="backHome" type="button" aria-label="Quay lại"></button>
@@ -444,6 +547,7 @@
   </main>
 
   <main class="flashcard-page hidden" id="deckPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Chi tiết flashcard">
       <div class="deck-toolbar">
         <button class="icon-button back-icon" id="backDeckList" type="button" aria-label="Quay lại"></button>
@@ -457,6 +561,7 @@
   </main>
 
   <main class="flashcard-page hidden" id="studyPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Học flashcard">
       <div class="flashcard-toolbar">
         <button class="icon-button back-icon" id="backStudyDeck" type="button" aria-label="Quay lại"></button>
@@ -476,11 +581,32 @@
       <div class="study-nav">
         <button class="study-nav-button" id="previousStudyCard" type="button" aria-label="Từ trước">‹</button>
         <button class="study-nav-button" id="nextStudyCard" type="button" aria-label="Từ tiếp theo">›</button>
+        <button class="study-add-button" id="openAddToGroup" type="button">Thêm</button>
       </div>
     </section>
   </main>
 
+  <main class="flashcard-page hidden" id="addToGroupPage">
+    <button class="home-nav-button" type="button">HOME</button>
+    <section class="flashcard-frame" aria-label="Thêm vào nhóm">
+      <div class="flashcard-toolbar">
+        <button class="icon-button back-icon" id="backStudyFromGroup" type="button" aria-label="Quay lại"></button>
+        <div class="screen-title">Thêm vào nhóm</div>
+      </div>
+
+      <div class="group-list" id="groupList"></div>
+      <button class="create-group-button" id="showCreateGroup" type="button">Tạo nhóm mới</button>
+
+      <form class="group-form hidden" id="groupForm">
+        <input class="group-name-input" id="groupName" type="text" placeholder="Tên nhóm" autocomplete="off">
+        <button class="group-form-button" type="submit">OK</button>
+        <button class="group-form-button" id="cancelGroup" type="button">Hủy</button>
+      </form>
+    </section>
+  </main>
+
   <main class="flashcard-page hidden" id="studyOptionsPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Tùy chọn học">
       <div class="flashcard-toolbar">
         <button class="icon-button back-icon" id="backStudyOptions" type="button" aria-label="Quay lại"></button>
@@ -510,6 +636,7 @@
   </main>
 
   <main class="flashcard-page hidden" id="settingsPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Cài đặt">
       <div class="flashcard-toolbar">
         <button class="icon-button back-icon" id="backDeckDetail" type="button" aria-label="Quay lại"></button>
@@ -525,6 +652,7 @@
   </main>
 
   <main class="flashcard-page hidden" id="addWordPage">
+    <button class="home-nav-button" type="button">HOME</button>
     <section class="flashcard-frame" aria-label="Thêm 1 từ">
       <div class="flashcard-toolbar">
         <button class="icon-button back-icon" id="backSettings" type="button" aria-label="Quay lại"></button>
@@ -557,9 +685,11 @@
 
   <script>
     const homePage = document.getElementById("homePage");
+    const homeNavButtons = document.querySelectorAll(".home-nav-button");
     const flashcardPage = document.getElementById("flashcardPage");
     const deckPage = document.getElementById("deckPage");
     const studyPage = document.getElementById("studyPage");
+    const addToGroupPage = document.getElementById("addToGroupPage");
     const studyOptionsPage = document.getElementById("studyOptionsPage");
     const settingsPage = document.getElementById("settingsPage");
     const addWordPage = document.getElementById("addWordPage");
@@ -567,6 +697,7 @@
     const backHome = document.getElementById("backHome");
     const backDeckList = document.getElementById("backDeckList");
     const backStudyDeck = document.getElementById("backStudyDeck");
+    const backStudyFromGroup = document.getElementById("backStudyFromGroup");
     const backStudyOptions = document.getElementById("backStudyOptions");
     const backDeckDetail = document.getElementById("backDeckDetail");
     const backSettings = document.getElementById("backSettings");
@@ -587,25 +718,47 @@
     const restartStudyCard = document.getElementById("restartStudyCard");
     const previousStudyCard = document.getElementById("previousStudyCard");
     const nextStudyCard = document.getElementById("nextStudyCard");
+    const openAddToGroup = document.getElementById("openAddToGroup");
+    const groupList = document.getElementById("groupList");
+    const showCreateGroup = document.getElementById("showCreateGroup");
+    const groupForm = document.getElementById("groupForm");
+    const groupName = document.getElementById("groupName");
+    const cancelGroup = document.getElementById("cancelGroup");
     const nameForm = document.getElementById("nameForm");
     const deckName = document.getElementById("deckName");
     const cancelName = document.getElementById("cancelName");
     const deckTitle = document.getElementById("deckTitle");
     const deckWordList = document.getElementById("deckWordList");
+    const storageKey = "tonFlashcardAppState";
+    const deckNames = [];
+    const groupNames = [];
     const wordsByDeck = {};
+    const wordsByGroup = {};
     const displaySettings = {
       front: ["kanji"],
       back: ["higarana", "hanViet", "meaning"]
     };
     let currentDeckName = "";
     let currentStudyIndex = 0;
+    let studyOrder = [];
+    let isRandomMode = false;
     let isStudyCardBack = false;
+    let editingWordIndex = null;
+    let editingDeckName = null;
+    let openWordActionMenu = null;
+    let wordIndexToAddToGroup = null;
+    let addToGroupReturnScreen = studyPage;
+    let activeScreen = homePage;
+    let previousScreen = homePage;
 
     function showScreen(screen) {
+      previousScreen = activeScreen;
+      activeScreen = screen;
       homePage.classList.add("hidden");
       flashcardPage.classList.add("hidden");
       deckPage.classList.add("hidden");
       studyPage.classList.add("hidden");
+      addToGroupPage.classList.add("hidden");
       studyOptionsPage.classList.add("hidden");
       settingsPage.classList.add("hidden");
       addWordPage.classList.add("hidden");
@@ -616,8 +769,149 @@
       return wordsByDeck[currentDeckName] || [];
     }
 
+    function saveAppState() {
+      const appState = {
+        deckNames,
+        groupNames,
+        wordsByDeck,
+        wordsByGroup,
+        displaySettings
+      };
+
+      localStorage.setItem(storageKey, JSON.stringify(appState));
+    }
+
+    function createDeckRow(name) {
+      const deckRow = document.createElement("div");
+      deckRow.className = "deck-row";
+
+      const deckOpen = document.createElement("button");
+      deckOpen.className = "deck-open";
+      deckOpen.type = "button";
+      deckOpen.textContent = name;
+      deckOpen.addEventListener("click", () => {
+        currentDeckName = name;
+        deckTitle.textContent = name;
+        renderDeckWords();
+        showScreen(deckPage);
+      });
+
+      const deckMenu = document.createElement("button");
+      deckMenu.className = "deck-menu";
+      deckMenu.type = "button";
+      deckMenu.textContent = "...";
+      deckMenu.setAttribute("aria-label", `Tùy chọn ${name}`);
+      deckMenu.addEventListener("click", (event) => {
+        event.stopPropagation();
+
+        if (openWordActionMenu) {
+          openWordActionMenu.remove();
+          openWordActionMenu = null;
+        }
+
+        const actionMenu = document.createElement("div");
+        actionMenu.className = "word-action-menu";
+
+        const renameButton = document.createElement("button");
+        renameButton.className = "word-action-button";
+        renameButton.type = "button";
+        renameButton.textContent = "Chỉnh tên";
+        renameButton.addEventListener("click", () => {
+          actionMenu.remove();
+          openWordActionMenu = null;
+          editingDeckName = name;
+          deckName.value = name;
+          addCard.classList.add("hidden");
+          nameForm.classList.remove("hidden");
+          deckName.focus();
+        });
+
+        const deleteButton = document.createElement("button");
+        deleteButton.className = "word-action-button";
+        deleteButton.type = "button";
+        deleteButton.textContent = "Xóa";
+        deleteButton.addEventListener("click", () => {
+          const shouldDelete = confirm(`Xóa "${name}"?`);
+          if (shouldDelete) {
+            const deckIndex = deckNames.indexOf(name);
+            if (deckIndex >= 0) {
+              deckNames.splice(deckIndex, 1);
+            }
+
+            deckRow.remove();
+            delete wordsByDeck[name];
+            saveAppState();
+          }
+        });
+
+        actionMenu.append(renameButton, deleteButton);
+        deckRow.append(actionMenu);
+        openWordActionMenu = actionMenu;
+      });
+
+      deckRow.append(deckOpen, deckMenu);
+      return deckRow;
+    }
+
+    function renderDeckList() {
+      deckList.querySelectorAll(".deck-row").forEach((row) => row.remove());
+
+      deckNames.forEach((name) => {
+        deckList.insertBefore(createDeckRow(name), nameForm);
+      });
+    }
+
+    function loadAppState() {
+      const savedState = localStorage.getItem(storageKey);
+      if (!savedState) {
+        return;
+      }
+
+      try {
+        const appState = JSON.parse(savedState);
+
+        if (Array.isArray(appState.deckNames)) {
+          deckNames.splice(0, deckNames.length, ...appState.deckNames);
+        }
+
+        if (appState.wordsByDeck && typeof appState.wordsByDeck === "object") {
+          Object.assign(wordsByDeck, appState.wordsByDeck);
+        }
+
+        if (Array.isArray(appState.groupNames)) {
+          groupNames.splice(0, groupNames.length, ...appState.groupNames);
+        }
+
+        if (appState.wordsByGroup && typeof appState.wordsByGroup === "object") {
+          Object.assign(wordsByGroup, appState.wordsByGroup);
+        }
+
+        groupNames.forEach((name) => {
+          if (!deckNames.includes(name)) {
+            deckNames.push(name);
+            wordsByDeck[name] = wordsByGroup[name] || [];
+          }
+        });
+
+        if (appState.displaySettings && typeof appState.displaySettings === "object") {
+          if (Array.isArray(appState.displaySettings.front)) {
+            displaySettings.front = appState.displaySettings.front;
+          }
+
+          if (Array.isArray(appState.displaySettings.back)) {
+            displaySettings.back = appState.displaySettings.back;
+          }
+        }
+
+        renderDeckList();
+      } catch (error) {
+        localStorage.removeItem(storageKey);
+      }
+    }
+
     function renderDeckWords() {
       deckWordList.innerHTML = "";
+      openWordActionMenu = null;
 
       getCurrentWords().forEach((word, index) => {
         const wordItem = document.createElement("div");
@@ -629,15 +923,101 @@
 
         const kanjiBox = document.createElement("div");
         kanjiBox.className = "kanji-box";
-        kanjiBox.textContent = word.kanji || "漢字";
+
+        const kanjiText = document.createElement("div");
+        kanjiText.className = "kanji-text";
+        kanjiText.textContent = word.kanji || "漢字";
+
+        const wordMenu = document.createElement("button");
+        wordMenu.className = "word-menu";
+        wordMenu.type = "button";
+        wordMenu.textContent = "...";
+        wordMenu.setAttribute("aria-label", `Tùy chọn từ số ${index + 1}`);
+        wordMenu.addEventListener("click", (event) => {
+          event.stopPropagation();
+
+          if (openWordActionMenu) {
+            openWordActionMenu.remove();
+            openWordActionMenu = null;
+          }
+
+          const actionMenu = document.createElement("div");
+          actionMenu.className = "word-action-menu";
+
+          const editButton = document.createElement("button");
+          editButton.className = "word-action-button";
+          editButton.type = "button";
+          editButton.textContent = "Chỉnh sửa";
+          editButton.addEventListener("click", () => {
+            actionMenu.remove();
+            openWordActionMenu = null;
+            openEditWord(index);
+          });
+
+          const addToGroupButton = document.createElement("button");
+          addToGroupButton.className = "word-action-button";
+          addToGroupButton.type = "button";
+          addToGroupButton.textContent = "Thêm vào nhóm";
+          addToGroupButton.addEventListener("click", () => {
+            actionMenu.remove();
+            openWordActionMenu = null;
+            wordIndexToAddToGroup = index;
+            addToGroupReturnScreen = deckPage;
+            renderGroupList();
+            groupForm.classList.add("hidden");
+            showCreateGroup.classList.remove("hidden");
+            showScreen(addToGroupPage);
+          });
+
+          const deleteButton = document.createElement("button");
+          deleteButton.className = "word-action-button";
+          deleteButton.type = "button";
+          deleteButton.textContent = "Xóa";
+          deleteButton.addEventListener("click", () => {
+            const shouldDelete = confirm("Xóa từ này?");
+            if (shouldDelete) {
+              getCurrentWords().splice(index, 1);
+              saveAppState();
+              renderDeckWords();
+            }
+          });
+
+          actionMenu.append(editButton, addToGroupButton, deleteButton);
+          wordItem.append(actionMenu);
+          openWordActionMenu = actionMenu;
+        });
+
+        kanjiBox.append(kanjiText, wordMenu);
 
         wordItem.append(wordNumber, kanjiBox);
         deckWordList.append(wordItem);
       });
     }
 
+    function openAddWordForm() {
+      editingWordIndex = null;
+      wordForm.reset();
+      showScreen(addWordPage);
+    }
+
+    function openEditWord(index) {
+      const word = getCurrentWords()[index];
+      if (!word) {
+        return;
+      }
+
+      editingWordIndex = index;
+      document.getElementById("kanji").value = word.kanji || "";
+      document.getElementById("higarana").value = word.higarana || "";
+      document.getElementById("hanViet").value = word.hanViet || "";
+      document.getElementById("meaning").value = word.meaning || "";
+      document.getElementById("example").value = word.example || "";
+      document.getElementById("exampleMeaning").value = word.exampleMeaning || "";
+      showScreen(addWordPage);
+    }
+
     function renderStudyCard() {
-      const word = getCurrentWords()[currentStudyIndex];
+      const word = getCurrentWords()[studyOrder[currentStudyIndex]];
       studyCard.innerHTML = "";
 
       if (!word) {
@@ -662,10 +1042,67 @@
       studyCard.append(content);
     }
 
+    function createStudyOrder() {
+      studyOrder = getCurrentWords().map((word, index) => index);
+    }
+
+    function shuffleStudyOrder() {
+      for (let index = studyOrder.length - 1; index > 0; index -= 1) {
+        const randomIndex = Math.floor(Math.random() * (index + 1));
+        [studyOrder[index], studyOrder[randomIndex]] = [studyOrder[randomIndex], studyOrder[index]];
+      }
+    }
+
+    function getCurrentStudyWord() {
+      const targetIndex = wordIndexToAddToGroup ?? studyOrder[currentStudyIndex];
+      return getCurrentWords()[targetIndex] || null;
+    }
+
+    function addCurrentWordToGroup(groupNameValue) {
+      const word = getCurrentStudyWord();
+      if (!word) {
+        return;
+      }
+
+      if (!wordsByDeck[groupNameValue]) {
+        wordsByDeck[groupNameValue] = [];
+      }
+
+      wordsByDeck[groupNameValue].push({
+        ...word,
+        sourceDeck: currentDeckName
+      });
+      saveAppState();
+      alert(`Đã thêm vào nhóm "${groupNameValue}".`);
+      wordIndexToAddToGroup = null;
+      showScreen(addToGroupReturnScreen);
+    }
+
+    function renderGroupList() {
+      groupList.innerHTML = "";
+
+      deckNames.forEach((name) => {
+        const groupButton = document.createElement("button");
+        groupButton.className = "group-button";
+        groupButton.type = "button";
+        groupButton.textContent = name;
+        groupButton.addEventListener("click", () => {
+          addCurrentWordToGroup(name);
+        });
+
+        groupList.append(groupButton);
+      });
+    }
+
     function openStudyScreen() {
       studyTitle.textContent = `HỌC: ${currentDeckName}`;
+      createStudyOrder();
+      if (isRandomMode) {
+        shuffleStudyOrder();
+      }
       currentStudyIndex = 0;
       isStudyCardBack = false;
+      restartStudyCard.classList.toggle("active", isRandomMode);
       renderStudyCard();
       showScreen(studyPage);
     }
@@ -680,6 +1117,7 @@
       }
 
       wordsByDeck[currentDeckName].push(...words);
+      saveAppState();
       renderDeckWords();
       showScreen(deckPage);
     }
@@ -721,6 +1159,19 @@
       showScreen(flashcardPage);
     });
 
+    homeNavButtons.forEach((homeNavButton) => {
+      homeNavButton.addEventListener("click", () => {
+        showScreen(previousScreen || homePage);
+      });
+    });
+
+    document.addEventListener("click", () => {
+      if (openWordActionMenu) {
+        openWordActionMenu.remove();
+        openWordActionMenu = null;
+      }
+    });
+
     backHome.addEventListener("click", () => {
       showScreen(homePage);
     });
@@ -737,11 +1188,20 @@
       showScreen(deckPage);
     });
 
+    backStudyFromGroup.addEventListener("click", () => {
+      wordIndexToAddToGroup = null;
+      groupForm.classList.add("hidden");
+      showCreateGroup.classList.remove("hidden");
+      showScreen(addToGroupReturnScreen);
+    });
+
     backStudyOptions.addEventListener("click", () => {
       showScreen(studyPage);
     });
 
     backSettings.addEventListener("click", () => {
+      editingWordIndex = null;
+      wordForm.reset();
       showScreen(settingsPage);
     });
 
@@ -783,7 +1243,7 @@
     });
 
     openAddWord.addEventListener("click", () => {
-      showScreen(addWordPage);
+      openAddWordForm();
     });
 
     startStudy.addEventListener("click", () => {
@@ -795,34 +1255,89 @@
       renderStudyCard();
     });
 
+    studyCard.addEventListener("click", () => {
+      isStudyCardBack = !isStudyCardBack;
+      renderStudyCard();
+    });
+
     restartStudyCard.addEventListener("click", () => {
+      isRandomMode = !isRandomMode;
+      restartStudyCard.classList.toggle("active", isRandomMode);
+      createStudyOrder();
+      if (isRandomMode) {
+        shuffleStudyOrder();
+      }
+
+      currentStudyIndex = 0;
       isStudyCardBack = false;
       renderStudyCard();
     });
 
     previousStudyCard.addEventListener("click", () => {
-      const words = getCurrentWords();
-      if (words.length === 0) {
+      if (studyOrder.length === 0) {
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex - 1 + words.length) % words.length;
+      currentStudyIndex = (currentStudyIndex - 1 + studyOrder.length) % studyOrder.length;
       isStudyCardBack = false;
       renderStudyCard();
     });
 
     nextStudyCard.addEventListener("click", () => {
-      const words = getCurrentWords();
-      if (words.length === 0) {
+      if (studyOrder.length === 0) {
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex + 1) % words.length;
+      currentStudyIndex = (currentStudyIndex + 1) % studyOrder.length;
       isStudyCardBack = false;
       renderStudyCard();
     });
 
+    openAddToGroup.addEventListener("click", () => {
+      wordIndexToAddToGroup = studyOrder[currentStudyIndex];
+      addToGroupReturnScreen = studyPage;
+      renderGroupList();
+      groupForm.classList.add("hidden");
+      showCreateGroup.classList.remove("hidden");
+      showScreen(addToGroupPage);
+    });
+
+    showCreateGroup.addEventListener("click", () => {
+      showCreateGroup.classList.add("hidden");
+      groupForm.classList.remove("hidden");
+      groupName.value = "";
+      groupName.focus();
+    });
+
+    cancelGroup.addEventListener("click", () => {
+      groupForm.classList.add("hidden");
+      showCreateGroup.classList.remove("hidden");
+    });
+
+    groupForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+
+      const name = groupName.value.trim();
+      if (!name) {
+        groupName.focus();
+        return;
+      }
+
+      if (!deckNames.includes(name)) {
+        deckNames.push(name);
+        wordsByDeck[name] = [];
+      }
+
+      saveAppState();
+      renderDeckList();
+      renderGroupList();
+      groupForm.classList.add("hidden");
+      showCreateGroup.classList.remove("hidden");
+      addCurrentWordToGroup(name);
+    });
+
     addCard.addEventListener("click", () => {
+      editingDeckName = null;
       addCard.classList.add("hidden");
       nameForm.classList.remove("hidden");
       deckName.value = "";
@@ -830,6 +1345,8 @@
     });
 
     cancelName.addEventListener("click", () => {
+      editingDeckName = null;
+      deckName.value = "";
       nameForm.classList.add("hidden");
       addCard.classList.remove("hidden");
     });
@@ -843,37 +1360,50 @@
         return;
       }
 
-      const deckRow = document.createElement("div");
-      deckRow.className = "deck-row";
-
-      const deckOpen = document.createElement("button");
-      deckOpen.className = "deck-open";
-      deckOpen.type = "button";
-      deckOpen.textContent = name;
-      deckOpen.addEventListener("click", () => {
-        currentDeckName = name;
-        deckTitle.textContent = name;
-        renderDeckWords();
-        showScreen(deckPage);
-      });
-
-      const deckMenu = document.createElement("button");
-      deckMenu.className = "deck-menu";
-      deckMenu.type = "button";
-      deckMenu.textContent = "...";
-      deckMenu.setAttribute("aria-label", `Xóa ${name}`);
-      deckMenu.addEventListener("click", () => {
-        const shouldDelete = confirm(`Xóa "${name}"?`);
-        if (shouldDelete) {
-          deckRow.remove();
-          delete wordsByDeck[name];
+      if (editingDeckName) {
+        if (name !== editingDeckName && deckNames.includes(name)) {
+          alert("Tên này đã tồn tại.");
+          deckName.focus();
+          return;
         }
-      });
 
-      deckRow.append(deckOpen, deckMenu);
-      deckList.insertBefore(deckRow, nameForm);
+        const deckIndex = deckNames.indexOf(editingDeckName);
+        if (deckIndex >= 0) {
+          deckNames[deckIndex] = name;
+        }
+
+        if (name !== editingDeckName) {
+          wordsByDeck[name] = wordsByDeck[editingDeckName] || [];
+          delete wordsByDeck[editingDeckName];
+        }
+
+        if (currentDeckName === editingDeckName) {
+          currentDeckName = name;
+          deckTitle.textContent = name;
+        }
+
+        editingDeckName = null;
+        saveAppState();
+        renderDeckList();
+        nameForm.classList.add("hidden");
+        addCard.classList.remove("hidden");
+        deckName.value = "";
+        return;
+      }
+
+      if (deckNames.includes(name)) {
+        alert("Tên này đã tồn tại.");
+        deckName.focus();
+        return;
+      }
+
+      deckNames.push(name);
+      wordsByDeck[name] = [];
+      deckList.insertBefore(createDeckRow(name), nameForm);
+      saveAppState();
       nameForm.classList.add("hidden");
       addCard.classList.remove("hidden");
+      deckName.value = "";
     });
 
     wordForm.addEventListener("submit", (event) => {
@@ -896,8 +1426,15 @@
         wordsByDeck[currentDeckName] = [];
       }
 
-      wordsByDeck[currentDeckName].push(word);
+      if (editingWordIndex === null) {
+        wordsByDeck[currentDeckName].push(word);
+      } else {
+        wordsByDeck[currentDeckName][editingWordIndex] = word;
+        editingWordIndex = null;
+      }
+
       wordForm.reset();
+      saveAppState();
       renderDeckWords();
       showScreen(deckPage);
     });
@@ -912,9 +1449,12 @@
 
       displaySettings.front = front.length ? front : ["kanji"];
       displaySettings.back = back.length ? back : ["meaning"];
+      saveAppState();
       renderStudyCard();
       showScreen(studyPage);
     });
+
+    loadAppState();
   </script>
 </body>
 </html>
