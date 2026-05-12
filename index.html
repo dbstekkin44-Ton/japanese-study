@@ -77,7 +77,7 @@
       height: 58px;
       border: 3px solid #111;
       background: #fff;
-      color: var(--study-accent);
+      color: #111;
       font-size: 20px;
       cursor: pointer;
       margin-bottom: 28px;
@@ -94,9 +94,9 @@
 
     .flashcard-toolbar {
       display: grid;
-      grid-template-columns: 36px 1fr 36px;
+      grid-template-columns: calc(36px * var(--ui-scale)) minmax(0, 1fr) calc(36px * var(--ui-scale));
       align-items: center;
-      height: 40px;
+      height: calc(40px * var(--ui-scale));
     }
 
     .screen-title {
@@ -104,11 +104,15 @@
       text-align: center;
       font-size: 20px;
       font-weight: 700;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
     }
 
     .icon-button {
-      width: 36px;
-      height: 36px;
+      width: calc(36px * var(--ui-scale));
+      height: calc(36px * var(--ui-scale));
       border: 0;
       background: transparent;
       position: relative;
@@ -121,20 +125,20 @@
       content: "";
       position: absolute;
       left: 8px;
-      width: 26px;
-      height: 6px;
+      width: calc(26px * var(--ui-scale));
+      height: calc(6px * var(--ui-scale));
       background: #111;
       border-radius: 4px;
       transform-origin: left center;
     }
 
     .back-icon::before {
-      top: 17px;
+      top: calc(17px * var(--ui-scale));
       transform: rotate(-45deg);
     }
 
     .back-icon::after {
-      top: 17px;
+      top: calc(17px * var(--ui-scale));
       transform: rotate(45deg);
     }
 
@@ -148,10 +152,10 @@
 
     .deck-toolbar {
       display: grid;
-      grid-template-columns: 44px 1fr 70px 44px;
-      gap: 8px;
+      grid-template-columns: calc(44px * var(--ui-scale)) minmax(0, 1fr) calc(70px * var(--ui-scale)) calc(44px * var(--ui-scale));
+      gap: calc(8px * var(--ui-scale));
       align-items: center;
-      height: 48px;
+      height: calc(48px * var(--ui-scale));
     }
 
     .deck-toolbar .screen-title {
@@ -704,7 +708,7 @@
     }
 
     .flashcard-frame .settings-icon {
-      font-size: calc(34px * var(--ui-scale));
+      font-size: calc(28px * var(--ui-scale));
     }
 
     .flashcard-frame .deck-row,
@@ -782,7 +786,7 @@
 
     .flashcard-frame .study-nav-button {
       min-height: calc(42px * var(--ui-scale));
-      font-size: calc(46px * var(--ui-scale));
+      font-size: calc(36px * var(--ui-scale));
       line-height: calc(32px * var(--ui-scale));
     }
 
@@ -1160,14 +1164,15 @@
 
     function applyUiSettings() {
       const scale = Math.min(Math.max(Number(appUiSettings.studyScale) || 100, 80), 250);
+      const contentScale = Math.min(scale, 170);
       const backgroundColor = getBackgroundColor();
       appUiSettings.studyScale = scale;
       document.documentElement.style.setProperty("--study-frame-width", `${Math.round(430 * scale / 100)}px`);
       document.documentElement.style.setProperty("--study-frame-min-height", `${Math.round(520 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * Math.min(scale, 170) / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * scale / 100)}px`);
-      document.documentElement.style.setProperty("--ui-scale", scale / 100);
+      document.documentElement.style.setProperty("--study-card-min-height", `${Math.round(295 * contentScale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-font-size", `${Math.round(42 * contentScale / 100)}px`);
+      document.documentElement.style.setProperty("--study-card-multi-font-size", `${Math.round(24 * contentScale / 100)}px`);
+      document.documentElement.style.setProperty("--ui-scale", contentScale / 100);
       document.documentElement.style.setProperty("--app-bg", backgroundColor);
       document.documentElement.style.setProperty("--app-text", getReadablePageTextColor(backgroundColor));
       document.documentElement.style.setProperty("--study-accent", getReadableAccentColor(backgroundColor));
