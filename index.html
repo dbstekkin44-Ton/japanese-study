@@ -1745,6 +1745,16 @@
         showNextStudyCard();
       }
 
+      if (event.key === "ArrowUp") {
+        event.preventDefault();
+        markCurrentStudyWord("remembered");
+      }
+
+      if (event.key === "ArrowDown") {
+        event.preventDefault();
+        markCurrentStudyWord("forgotten");
+      }
+
       if (event.key === " " || event.key === "Spacebar") {
         event.preventDefault();
         flipCurrentStudyCard();
