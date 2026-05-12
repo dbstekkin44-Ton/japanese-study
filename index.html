@@ -925,6 +925,9 @@
 
       if (isStudyingMemoryGroup) {
         createStudyOrder();
+        if (isRandomMode) {
+          shuffleStudyOrder();
+        }
 
         if (studyOrder.length === 0) {
           renderDeckWords();
@@ -1334,6 +1337,20 @@
       }
     }
 
+    function moveDifferentRandomCardTo(targetPosition, currentWordIndex) {
+      if (studyOrder.length < 2 || studyOrder[targetPosition] !== currentWordIndex) {
+        return;
+      }
+
+      const replacementPosition = studyOrder.findIndex((wordIndex) => wordIndex !== currentWordIndex);
+      if (replacementPosition >= 0) {
+        [studyOrder[targetPosition], studyOrder[replacementPosition]] = [
+          studyOrder[replacementPosition],
+          studyOrder[targetPosition]
+        ];
+      }
+    }
+
     function getCurrentStudyWord() {
       const targetIndex = wordIndexToAddToGroup ?? studyOrder[currentStudyIndex];
       return getCurrentWords()[targetIndex] || null;
@@ -1398,7 +1415,15 @@
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex - 1 + studyOrder.length) % studyOrder.length;
+      if (currentStudyIndex === 0 && isRandomMode) {
+        const currentWordIndex = studyOrder[currentStudyIndex];
+        shuffleStudyOrder();
+        moveDifferentRandomCardTo(studyOrder.length - 1, currentWordIndex);
+        currentStudyIndex = studyOrder.length - 1;
+      } else {
+        currentStudyIndex = (currentStudyIndex - 1 + studyOrder.length) % studyOrder.length;
+      }
+
       isStudyCardBack = false;
       renderStudyCard();
     }
@@ -1408,7 +1433,15 @@
         return;
       }
 
-      currentStudyIndex = (currentStudyIndex + 1) % studyOrder.length;
+      if (currentStudyIndex === studyOrder.length - 1 && isRandomMode) {
+        const currentWordIndex = studyOrder[currentStudyIndex];
+        shuffleStudyOrder();
+        moveDifferentRandomCardTo(0, currentWordIndex);
+        currentStudyIndex = 0;
+      } else {
+        currentStudyIndex = (currentStudyIndex + 1) % studyOrder.length;
+      }
+
       isStudyCardBack = false;
       renderStudyCard();
     }
