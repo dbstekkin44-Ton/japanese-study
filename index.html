@@ -484,6 +484,9 @@
       color: #111;
       font-size: 20px;
       cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .study-action.active,
@@ -915,7 +918,7 @@
     .flashcard-frame .study-options-ok,
     .flashcard-frame .check-answer-ok {
       min-height: calc(42px * var(--ui-scale));
-      font-size: calc(20px * var(--ui-scale));
+      font-size: calc(16px * var(--ui-scale));
     }
 
     .flashcard-frame .check-actions .study-action {
